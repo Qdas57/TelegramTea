@@ -52,10 +52,13 @@ namespace ConsoleApp
             if (message.Document != null)
             {
                 Console.WriteLine($"Data: {DateTime.Now}\n ChatId: {message.Chat.Id} \n Action: send Document {message.Document.FileName}");
+                
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Перехожу к записи в бд");
 
                 var fileId = update.Message.Document.FileId;
+
                 var fileInfo = await botClient.GetFileAsync(fileId);
+
                 var filePath = fileInfo.FilePath;
 
                 string destinationFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{Guid.NewGuid()}.jpg";
