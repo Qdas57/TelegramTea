@@ -1,6 +1,6 @@
 ﻿namespace ConsoleApp.Data.Entities
 {
-    public class PhotoData
+    public class PhotoEntity
     {        
         public int Id { get; set; }
 

@@ -3,35 +3,39 @@ using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Microsoft.EntityFrameworkCore;
-using ConsoleApp;
-using System.Linq;
 using System.IO;
-using Telegram.Bot.Types.ReplyMarkups;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InputFiles;
 using ConsoleApp.Data.Entities;
-using System.Runtime.InteropServices;
+using TelegramTea.Repositories;
 
 namespace ConsoleApp
 {
+    //S.O.L.I.D - 
+
+    //S - принцип единственной ответственности - Single responsibility principle
+    // Паттерн проектирования Репозиторий
     internal class TelegramLogics
     {
-        DateTime dateTime = new DateTime();
-        public static async Task Telegram(string[] args)
+        private readonly PhotoRepository _photoRepository;
+
+        public TelegramLogics()
+        {
+            _photoRepository = new PhotoRepository();
+        }
+
+        public async Task Telegram(string[] args)
         {
             var client = new TelegramBotClient("5641621844:AAEdBTO7vQphtQhg9Gbx7dKYxYpf6aYKoLs");
-            client.StartReceiving(Update, Error);
+            client.StartReceiving(Update, Error);            
+
             Console.WriteLine("The coolest logs in thread..");
             Console.ReadLine();
-
         }
 
-        async static Task Error(ITelegramBotClient arg1, Exception arg2, CancellationToken arg3)
+        async Task Error(ITelegramBotClient arg1, Exception arg2, CancellationToken arg3)
         {
         }
 
-        async static Task Update(ITelegramBotClient botClient, Update update, CancellationToken token)
+        async Task Update(ITelegramBotClient botClient, Update update, CancellationToken token)
         {
             var message = update.Message;
             if (!string.IsNullOrWhiteSpace(message.Text))        
@@ -68,29 +72,33 @@ namespace ConsoleApp
 
                 var filePath = fileInfo.FilePath;
 
-                string destinationFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{Guid.NewGuid()}.jpg";
+                var imageName = $"{Guid.NewGuid()}.jpg";
+
+                string destinationFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{imageName}";
                 await using FileStream fileStream = System.IO.File.OpenWrite(destinationFilePath);
                 await botClient.DownloadFileAsync(filePath, fileStream);
-                Console.WriteLine("Файл успешно сохранен с новым именем: " + Guid.NewGuid());
-                Console.WriteLine($"Тег фото: {message.Caption}");
 
-                PhotoContext photoContext = new PhotoContext();
+                var tag = string.IsNullOrWhiteSpace(message.Caption) ? "Без тега" : message.Caption;
 
-                await photoContext.Photos
-                    .AddAsync(new PhotoData
-                    {
-                        DateUpload = DateTime.Now.ToString(),
-                        NamePhoto = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{Guid.NewGuid()}.jpg",
-                        Tag = message.Caption
-                    });
+                var createdPhoto = _photoRepository.CreatePhoto(destinationFilePath, tag);
 
-                photoContext.SaveChanges();
-                await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл сохранен с тегом: {message.Caption == null ? "Без тега" : message.Caption}");
-                await botClient.SendTextMessageAsync(message.Chat.Id, "Файл успешно сохранен с новым именем: " + Guid.NewGuid());
+                Console.WriteLine($"Файл успешно сохранен с новым именем: {imageName}");
+                Console.WriteLine($"Тег фото: {tag}");
+                
+                await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл сохранен с тегом: {tag}");
+                await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл успешно сохранен с новым именем: {imageName}");
                 return;
             }
             // blob
+            // x => x.Name
+            // (parameters) => x.Name == "Some string"
+            // LINQ, лямбды, анонимные методы
 
+
+            //VS, VS Code, Rider
+            //ReSharper -> 
+
+            //Роберт Мартин "Чистый Код"
         }
     }
 }

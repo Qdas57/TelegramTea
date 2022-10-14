@@ -14,9 +14,9 @@ namespace ConsoleApp
 
         static void Main(string[] args)
         {
-            
-            TelegramLogics.Telegram(args);
-            
+            TelegramLogics t = new TelegramLogics();
+
+            t.Telegram(args);            
         }
 
     }
