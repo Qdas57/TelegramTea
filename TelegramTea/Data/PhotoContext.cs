@@ -17,7 +17,7 @@ namespace ConsoleApp
         //=> optionsBuilder.UseNpgsql("Server=Asd;Database=aboba;Trusted_Connection=True;"); 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=COMPUTER;Database=TgBot;Trusted_Connection=True;");
+        => optionsBuilder.UseSqlServer("Server=localhost;Database=Aboba;Trusted_Connection=True;");
 
     }
 }

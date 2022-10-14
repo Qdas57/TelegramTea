@@ -10,6 +10,8 @@ using System.IO;
 using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InputFiles;
+using ConsoleApp.Data.Entities;
+using System.Runtime.InteropServices;
 
 namespace ConsoleApp
 {
@@ -32,13 +34,18 @@ namespace ConsoleApp
         async static Task Update(ITelegramBotClient botClient, Update update, CancellationToken token)
         {
             var message = update.Message;
-            if (message.Text != null)
+            if (!string.IsNullOrWhiteSpace(message.Text))        
             {
                 Console.WriteLine($"Data: {DateTime.Now}\n ChatId: {message.Chat.Id} \n Action: send message {message.Text}");
-                if (message.Text.ToLower().Contains("/start"))
+                if (message.Text.ToLower() == "/start")
                 {
                     await botClient.SendTextMessageAsync(message.Chat.Id, $"Hiiii, {message.Chat.FirstName} \nJust send me Photo(document)");
                     return;
+                }
+                if (message.Text.ToLower() == "/tagfinder")
+                {
+                    await botClient.SendTextMessageAsync(message.Chat.Id, "Send me tag aboba");
+
                 }
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Я пока не могу распознать это сообщение :(");
                 return;
@@ -52,7 +59,7 @@ namespace ConsoleApp
             if (message.Document != null)
             {
                 Console.WriteLine($"Data: {DateTime.Now}\n ChatId: {message.Chat.Id} \n Action: send Document {message.Document.FileName}");
-                
+
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Перехожу к записи в бд");
 
                 var fileId = update.Message.Document.FileId;
@@ -65,9 +72,24 @@ namespace ConsoleApp
                 await using FileStream fileStream = System.IO.File.OpenWrite(destinationFilePath);
                 await botClient.DownloadFileAsync(filePath, fileStream);
                 Console.WriteLine("Файл успешно сохранен с новым именем: " + Guid.NewGuid());
+                Console.WriteLine($"Тег фото: {message.Caption}");
+
+                PhotoContext photoContext = new PhotoContext();
+
+                await photoContext.Photos
+                    .AddAsync(new PhotoData
+                    {
+                        DateUpload = DateTime.Now.ToString(),
+                        NamePhoto = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{Guid.NewGuid()}.jpg",
+                        Tag = message.Caption
+                    });
+
+                photoContext.SaveChanges();
+                await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл сохранен с тегом: {message.Caption == null ? "Без тега" : message.Caption}");
                 await botClient.SendTextMessageAsync(message.Chat.Id, "Файл успешно сохранен с новым именем: " + Guid.NewGuid());
                 return;
             }
+            // blob
 
         }
     }

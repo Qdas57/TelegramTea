@@ -7,5 +7,7 @@
         public string NamePhoto { get; set; }
 
         public string DateUpload { get; set; }
+
+        public string Tag { get; set; }
     }
 }
