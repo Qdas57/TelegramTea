@@ -94,12 +94,30 @@ namespace TelegramTea.Repositories
 
         }
         
-        public PhotoEntity DeletePhoto(int id)
+        public bool DeletePhoto(int id)
         {
-            throw new NotImplementedException();
-            //удаление фото
-            //IQueryable<PhotoEntity> photoEntities = _photoContext.Photos;
-            //photoEntities = photoEntities.Where(x => x.Id == Id);
+            try
+            {
+                var findedPhoto = _photoContext.Photos.FirstOrDefault(p => p.Id == id);
+
+                if (findedPhoto is null)
+                {
+                    //throw new ArgumentException($"Photo with id {id} not found.", nameof(id));
+                    return false;
+                }
+
+                _photoContext.Remove(findedPhoto);
+
+                _photoContext.SaveChanges();
+
+                return true;
+
+            }
+            catch (Exception)
+            {
+                //todo: log
+                throw;
+            }
 
         }
 

@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using System.IO;
-using ConsoleApp.Data.Entities;
 using TelegramTea.Repositories;
 using Telegram.Bot.Types.InputFiles;
-using System.Runtime.ConstrainedExecution;
 
 namespace ConsoleApp
 {
