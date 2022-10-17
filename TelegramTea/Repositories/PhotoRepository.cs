@@ -33,36 +33,81 @@ namespace TelegramTea.Repositories
             return photoEntity;
         }
 
+        public PhotoEntity GetRandomPhoto()
+        {
+            try
+            {
+                var count = _photoContext.Photos.Count();
+
+                Random random = new Random();
+
+                int index = random.Next(0, count - 1);
+
+                var photos = _photoContext.Photos.ToList();
+
+                return photos[index];
+            }
+            catch (Exception)
+            {
+                //TODO: Logging
+                throw;
+            }            
+        }
+
         public PhotoEntity GetRandomPhotoByTag(string tag)
         {
-            //TODO: случайную фотку по тегу
-            throw new NotImplementedException();
+            try
+            {
+                var query = _photoContext.Photos.Where(u => u.Tag.Contains(tag));
+                
+                var count = query.Count();
+
+                Random random = new Random();
+
+                int index = random.Next(0, count - 1);
+
+                var photos = query.ToList();
+
+                return photos[index];
+            }
+            catch (Exception)
+            {
+                //TODO: Logging
+                throw;
+            }
         }
 
         public int GetCountPhotos()
         {
             IQueryable<PhotoEntity> photoEntities = _photoContext.Photos;
+
             return photoEntities.Count();
         }
 
         public int GetCountPhotosByTag(string tag)
         {
-            
-            // количество фото в бд с таким тегом
             IQueryable<PhotoEntity> photoEntities = _photoContext.Photos;
+
             var result = photoEntities.Where(x => x.Tag == Tag).Count();
+
             return result;
 
         }
+        
         public PhotoEntity DeletePhoto(int id)
         {
-            
+            throw new NotImplementedException();
             //удаление фото
-            IQueryable<PhotoEntity> photoEntities = _photoContext.Photos;
-            photoEntities = photoEntities.Where(x => x.Id == Id);
+            //IQueryable<PhotoEntity> photoEntities = _photoContext.Photos;
+            //photoEntities = photoEntities.Where(x => x.Id == Id);
 
         }
 
+        public List<string> GetTagList()
+        {
+            throw new NotImplementedException();
+            //TODO: вернуть список уникальных
+        }
 
     }
 }

@@ -27,7 +27,7 @@ namespace ConsoleApp
         public async Task Telegram(string[] args)
         {
             var client = new TelegramBotClient("5641621844:AAEdBTO7vQphtQhg9Gbx7dKYxYpf6aYKoLs");
-            client.StartReceiving(Update, Error);            
+            client.StartReceiving(Update, Error);
 
             Console.WriteLine("The coolest logs in thread..");
             Console.ReadLine();
@@ -40,21 +40,60 @@ namespace ConsoleApp
         async Task Update(ITelegramBotClient botClient, Update update, CancellationToken token)
         {
             var message = update.Message;
-            if (!string.IsNullOrWhiteSpace(message.Text))        
+
+            if (!string.IsNullOrWhiteSpace(message.Text))
             {
                 Console.WriteLine($"Data: {DateTime.Now}\n ChatId: {message.Chat.Id} \n Action: send message {message.Text}");
+
                 if (message.Text.ToLower() == "/start")
                 {
                     await botClient.SendTextMessageAsync(message.Chat.Id, $"Hiiii, {message.Chat.FirstName} \nJust send me Photo(document)");
                     return;
                 }
-                if (message.Text.ToLower() == "/tagfinder")
-                { 
-                    await botClient.SendTextMessageAsync(message.Chat.Id, $"Send me tag {message.Chat.FirstName}");
-                    return;
+                if (message.Text.ToLower() == "/tags")
+                {
+                    //TODO: Показать все теги 
+                    // GetTagList()
 
+                    await botClient.SendTextMessageAsync(message.Chat.Id, $"Send me tag {message.Chat.FirstName}");
+
+                    return;
                 }
-                await botClient.SendTextMessageAsync(message.Chat.Id, $"I don't understand you, {message.Chat.FirstName}");
+                if (message.Text.ToLower() == "/random")
+                {
+                    var randomPhoto = _photoRepository.GetRandomPhoto();
+
+                    await using Stream stream = System.IO.File.OpenRead(randomPhoto.NamePhoto);
+
+                    await botClient.SendPhotoAsync(message.Chat.Id, new InputOnlineFile(stream), randomPhoto.Tag);
+
+                    return;
+                }
+                else
+                {
+                    try
+                    {
+                        var randomPhoto = _photoRepository.GetRandomPhotoByTag(message.Text);
+
+                        if (randomPhoto is null)
+                        {
+                            await botClient.SendTextMessageAsync(message.Chat.Id, $"Photo with tag {message.Text} not found.");
+
+                            return;
+                        }
+
+                        await using Stream stream = System.IO.File.OpenRead(randomPhoto.NamePhoto);
+
+                        await botClient.SendPhotoAsync(message.Chat.Id, new InputOnlineFile(stream), randomPhoto.Tag);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        throw;
+                    }
+                    
+                }
+
                 return;
             }
             if (message.Photo != null)
@@ -88,17 +127,17 @@ namespace ConsoleApp
 
                 Console.WriteLine($"Файл успешно сохранен с новым именем: {imageName}");
                 Console.WriteLine($"Тег фото: {tag}");
-                
+
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл сохранен с тегом: {tag}");
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл успешно сохранен с новым именем: {imageName}");
 
-                Thread.Sleep(10000);
-                await using Stream stream = System.IO.File.OpenRead(destinationFilePath);
-                await botClient.SendPhotoAsync(message.Chat.Id, new InputOnlineFile(stream,imageName), tag);
+                //Thread.Sleep(10000);
+
+
 
                 return;
             }
-            
+
             // blob
             // x => x.Name
             // (parameters) => x.Name == "Some string"
