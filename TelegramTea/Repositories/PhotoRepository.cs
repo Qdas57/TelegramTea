@@ -115,7 +115,7 @@ namespace TelegramTea.Repositories
             }
             catch (Exception)
             {
-                //todo: log
+                //todo: log Console.WriteLine();
                 throw;
             }
 
