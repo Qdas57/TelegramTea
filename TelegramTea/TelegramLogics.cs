@@ -6,6 +6,8 @@ using Telegram.Bot.Types;
 using System.IO;
 using ConsoleApp.Data.Entities;
 using TelegramTea.Repositories;
+using Telegram.Bot.Types.InputFiles;
+using System.Runtime.ConstrainedExecution;
 
 namespace ConsoleApp
 {
@@ -47,11 +49,12 @@ namespace ConsoleApp
                     return;
                 }
                 if (message.Text.ToLower() == "/tagfinder")
-                {
-                    await botClient.SendTextMessageAsync(message.Chat.Id, "Send me tag aboba");
+                { 
+                    await botClient.SendTextMessageAsync(message.Chat.Id, $"Send me tag {message.Chat.FirstName}");
+                    return;
 
                 }
-                await botClient.SendTextMessageAsync(message.Chat.Id, $"Я пока не могу распознать это сообщение :(");
+                await botClient.SendTextMessageAsync(message.Chat.Id, $"I don't understand you, {message.Chat.FirstName}");
                 return;
             }
             if (message.Photo != null)
@@ -73,8 +76,9 @@ namespace ConsoleApp
                 var filePath = fileInfo.FilePath;
 
                 var imageName = $"{Guid.NewGuid()}.jpg";
+                var directPath = Directory.CreateDirectory($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{message.Chat.Id}");
+                string destinationFilePath = $@"{directPath}\{imageName}";
 
-                string destinationFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{imageName}";
                 await using FileStream fileStream = System.IO.File.OpenWrite(destinationFilePath);
                 await botClient.DownloadFileAsync(filePath, fileStream);
 
@@ -87,8 +91,14 @@ namespace ConsoleApp
                 
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл сохранен с тегом: {tag}");
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл успешно сохранен с новым именем: {imageName}");
+
+                Thread.Sleep(10000);
+                await using Stream stream = System.IO.File.OpenRead(destinationFilePath);
+                await botClient.SendPhotoAsync(message.Chat.Id, new InputOnlineFile(stream,imageName), tag);
+
                 return;
             }
+            
             // blob
             // x => x.Name
             // (parameters) => x.Name == "Some string"

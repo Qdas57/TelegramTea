@@ -1,10 +1,12 @@
 ﻿using ConsoleApp;
 using ConsoleApp.Data.Entities;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace TelegramTea.Repositories
 {
-    public class PhotoRepository
+    public class PhotoRepository : PhotoEntity
     {
         //CRUD - Create, Read, Update, Delete
 
@@ -39,19 +41,28 @@ namespace TelegramTea.Repositories
 
         public int GetCountPhotos()
         {
-            //TODO: количество фото в бд
-            throw new NotImplementedException();
+            IQueryable<PhotoEntity> photoEntities = _photoContext.Photos;
+            return photoEntities.Count();
         }
 
-        public int GetCountPhotosByTag()
+        public int GetCountPhotosByTag(string tag)
         {
-            //TODO: количество фото в бд с таким тегом
-            throw new NotImplementedException();
-        }
+            
+            // количество фото в бд с таким тегом
+            IQueryable<PhotoEntity> photoEntities = _photoContext.Photos;
+            var result = photoEntities.Where(x => x.Tag == Tag).Count();
+            return result;
 
+        }
         public PhotoEntity DeletePhoto(int id)
         {
-            throw new NotImplementedException();
+            
+            //удаление фото
+            IQueryable<PhotoEntity> photoEntities = _photoContext.Photos;
+            photoEntities = photoEntities.Where(x => x.Id == Id);
+
         }
+
+
     }
 }

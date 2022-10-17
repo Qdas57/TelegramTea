@@ -6,7 +6,6 @@ namespace ConsoleApp
     class Program
     {
         //TODO:
-        //1. Добавить тег к photoEntity
         //2. Я хочу по тегу получать фото, которое имеет этот тег, если фото несколько - случайную.
         //3. Добавить логику добавления фото в бд
         //
@@ -15,10 +14,8 @@ namespace ConsoleApp
         static void Main(string[] args)
         {
             TelegramLogics t = new TelegramLogics();
-
-            t.Telegram(args);            
+            t.Telegram(args);
         }
-
     }
 }
 
