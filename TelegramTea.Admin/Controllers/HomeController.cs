@@ -1,20 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using TelegramTea.Repositories;
 
 namespace TelegramTea.Admin.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly PhotoRepository _photoRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController()
         {
-            _logger = logger;
+            _photoRepository = new PhotoRepository();
         }
 
         public IActionResult Index()
@@ -29,8 +24,9 @@ namespace TelegramTea.Admin.Controllers
 
         public IActionResult Photos()
         {
-            //TODO: достать все фото и вывести на страницу (bootstrap)
-            return View();
+            var photos = _photoRepository.GetAllPhotos();
+
+            return View(photos);
         }
     }
 }

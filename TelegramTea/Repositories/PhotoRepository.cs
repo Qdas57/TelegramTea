@@ -18,6 +18,21 @@ namespace TelegramTea.Repositories
             _photoContext = new PhotoContext();
         }
 
+        public List<PhotoEntity> GetAllPhotos()
+        {
+            try
+            {
+                var result = _photoContext.Photos.ToList();
+
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public PhotoEntity CreatePhoto(string name, string tag)
         {
             PhotoEntity photoEntity = new PhotoEntity()
@@ -127,7 +142,7 @@ namespace TelegramTea.Repositories
         {
             try
             {
-                var query = _photoContext.Photos.Select(u => u.Tag).Distinct(); // гроуп бай?????? 
+                var query = _photoContext.Photos.Select(u => u.Tag).Distinct(); 
 
                 var tags = query.ToList();
 

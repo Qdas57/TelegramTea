@@ -12,10 +12,15 @@ namespace ConsoleApp
     //S.O.L.I.D - 
 
     //S - принцип единственной ответственности - Single responsibility principle
-    // Паттерн проектирования Репозиторий
+    
+
+    //TODO: вынести логику для работы с файловой системой в отдельный класс - FileService ??
+
     internal class TelegramLogics
     {
         private readonly PhotoRepository _photoRepository;
+
+        private readonly string pathToRootDir = @"g:\PROFI.PROJECTS\NET\TelegramTea\Content";
 
         public TelegramLogics()
         {
@@ -54,9 +59,7 @@ namespace ConsoleApp
                     return;
                 }
                 if (message.Text.ToLower() == "/tags")
-                {
-                    //TODO: Показать все теги 
-                    // GetTagList() 
+                {                   
                     var tags = _photoRepository.GetTagList();
                     await botClient.SendTextMessageAsync(message.Chat.Id, $"Available tags: {string.Join(", ", tags)}");
 
@@ -117,17 +120,22 @@ namespace ConsoleApp
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Перехожу к записи в бд");
 
                 var fileId = update.Message.Photo[update.Message.Photo.Length - 1].FileId;
-
+                                
                 var fileInfo = await botClient.GetFileAsync(fileId);
 
+                //???
                 var filePath = fileInfo.FilePath;
 
                 var imageName = $"{Guid.NewGuid()}.jpg";
-                var directPath = Directory.CreateDirectory($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{message.Chat.Id}");
+                
+                var directPath = Directory.CreateDirectory($@"{pathToRootDir}\{message.Chat.Id}");
                 string destinationFilePath = $@"{directPath}\{imageName}";
 
                 await using FileStream fileStream = System.IO.File.OpenWrite(destinationFilePath);
+
                 await botClient.DownloadFileAsync(filePath, fileStream);
+
+                //
 
                 var tag = string.IsNullOrWhiteSpace(message.Caption) ? "Без тега" : message.Caption;
 

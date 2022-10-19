@@ -1,1 +1,15 @@
-﻿<p>Это страница фотос</p>
+﻿@using ConsoleApp.Data.Entities
+@model List<PhotoEntity>
+
+<p>Это страница фотос</p>
+
+@foreach (var photo in Model)
+{
+    <div class="card" style="width: 18rem;">
+        <img src="@photo.NamePhoto" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">@photo.Tag</h5>
+            <p class="card-text">@photo.DateUpload</p>
+        </div>
+    </div>
+}
