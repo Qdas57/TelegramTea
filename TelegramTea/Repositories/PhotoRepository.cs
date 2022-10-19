@@ -1,5 +1,6 @@
 ﻿using ConsoleApp;
 using ConsoleApp.Data.Entities;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,9 +48,9 @@ namespace TelegramTea.Repositories
 
                 return photos[index];
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //TODO: Logging
+                Console.WriteLine(e.Message + "\nОшибка в GetRandomPhoto");
                 throw;
             }            
         }
@@ -70,10 +71,10 @@ namespace TelegramTea.Repositories
 
                 return photos[index];
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //TODO: Logging
-                throw;
+                Console.WriteLine(e.Message + "\nОшибка в GetRandomPhotoByTag");
+                return null;
             }
         }
 
@@ -113,18 +114,30 @@ namespace TelegramTea.Repositories
                 return true;
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //todo: log Console.WriteLine();
-                throw;
+
+                Console.WriteLine(e.Message + "\nОшибка в методе DeletePhoto");
+                return false;
             }
 
         }
 
         public List<string> GetTagList()
         {
-            throw new NotImplementedException();
-            //TODO: вернуть список уникальных
+            try
+            {
+                var query = _photoContext.Photos.Select(u => u.Tag).Distinct(); // гроуп бай?????? 
+
+                var tags = query.ToList();
+
+                return tags;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message + "\nОшибка в методе GetTagList");
+                return null;
+            }
         }
 
     }

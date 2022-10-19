@@ -45,27 +45,41 @@ namespace ConsoleApp
 
                 if (message.Text.ToLower() == "/start")
                 {
-                    await botClient.SendTextMessageAsync(message.Chat.Id, $"Hiiii, {message.Chat.FirstName} \nJust send me Photo(document)");
+                    await botClient.SendTextMessageAsync(message.Chat.Id, $"Hi, {message.Chat.FirstName} \nJust send me Photo(document)");
+                    return;
+                }
+                if (message.Text.ToLower() == "/help")
+                {
+                    await botClient.SendTextMessageAsync(message.Chat.Id, $"Hi! Сommands to work with me: \n /start - Запуск бота \n /help - Список команд \n /random - Случайная фотография \n /tag - Все доступные теги( без повторов ) \n Отправьте мне фото документом и подпишите его - после этого я запишу его к себе в бд! Так же ты можешь написать произвольный тег и я попробую его найти!");
                     return;
                 }
                 if (message.Text.ToLower() == "/tags")
                 {
                     //TODO: Показать все теги 
-                    // GetTagList()
-
-                    await botClient.SendTextMessageAsync(message.Chat.Id, $"Send me tag {message.Chat.FirstName}");
+                    // GetTagList() 
+                    var tags = _photoRepository.GetTagList();
+                    await botClient.SendTextMessageAsync(message.Chat.Id, $"Available tags: {string.Join(", ", tags)}");
 
                     return;
                 }
                 if (message.Text.ToLower() == "/random")
                 {
-                    var randomPhoto = _photoRepository.GetRandomPhoto();
+                    try
+                    {
+                        var randomPhoto = _photoRepository.GetRandomPhoto();
 
-                    await using Stream stream = System.IO.File.OpenRead(randomPhoto.NamePhoto);
+                        await using Stream stream = System.IO.File.OpenRead(randomPhoto.NamePhoto);
 
-                    await botClient.SendPhotoAsync(message.Chat.Id, new InputOnlineFile(stream), randomPhoto.Tag);
+                        await botClient.SendPhotoAsync(message.Chat.Id, new InputOnlineFile(stream), randomPhoto.Tag);
 
-                    return;
+                        return;
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine(e.Message + "Ошибка в /random");
+                        await botClient.SendTextMessageAsync(message.Chat.Id, "Send this message to admin: " + e.Message);
+                        return;
+                    }
                 }
                 else
                 {
@@ -86,19 +100,44 @@ namespace ConsoleApp
                     }
                     catch (Exception e)
                     {
+                        await botClient.SendTextMessageAsync(message.Chat.Id, "Send this message to admin: " + e.Message);
                         Console.WriteLine(e.Message);
-                        throw;
+                        return;
                     }
                     
                 }
 
                 return;
+                
             }
             if (message.Photo != null)
             {
-                Console.WriteLine($"Data: {DateTime.Now}\n ChatId: {message.Chat.Id} \n Action: send Photo {message.Photo}");
-                await botClient.SendTextMessageAsync(message.Chat.Id, $"Почти угадал с форматом! Трайни ещё разок");
-                return;
+                Console.WriteLine($"Data: {DateTime.Now}\n ChatId: {message.Chat.Id} \n Action: send Document {message.Photo}");
+
+                await botClient.SendTextMessageAsync(message.Chat.Id, $"Перехожу к записи в бд");
+
+                var fileId = update.Message.Photo[update.Message.Photo.Length - 1].FileId;
+
+                var fileInfo = await botClient.GetFileAsync(fileId);
+
+                var filePath = fileInfo.FilePath;
+
+                var imageName = $"{Guid.NewGuid()}.jpg";
+                var directPath = Directory.CreateDirectory($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{message.Chat.Id}");
+                string destinationFilePath = $@"{directPath}\{imageName}";
+
+                await using FileStream fileStream = System.IO.File.OpenWrite(destinationFilePath);
+                await botClient.DownloadFileAsync(filePath, fileStream);
+
+                var tag = string.IsNullOrWhiteSpace(message.Caption) ? "Без тега" : message.Caption;
+
+                var createdPhoto = _photoRepository.CreatePhoto(destinationFilePath, tag);
+
+                Console.WriteLine($"Файл успешно сохранен с новым именем: {imageName}");
+                Console.WriteLine($"Тег фото: {tag}");
+
+                await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл сохранен с тегом: {tag}");
+                await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл успешно сохранен с новым именем: {imageName}");
             }
             if (message.Document != null)
             {
@@ -135,6 +174,7 @@ namespace ConsoleApp
 
                 return;
             }
+            
 
             // blob
             // x => x.Name
