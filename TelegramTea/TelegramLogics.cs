@@ -20,7 +20,7 @@ namespace ConsoleApp
     {
         private readonly PhotoRepository _photoRepository;
 
-        private readonly string pathToRootDir = @"g:\PROFI.PROJECTS\NET\TelegramTea\Content";
+        private readonly string pathToRootDir = @"G:\PROFI.PROJECTS\NET\TelegramTea\TelegramTea.Admin\wwwroot\images";
 
         public TelegramLogics()
         {
@@ -129,6 +129,7 @@ namespace ConsoleApp
                 var imageName = $"{Guid.NewGuid()}.jpg";
                 
                 var directPath = Directory.CreateDirectory($@"{pathToRootDir}\{message.Chat.Id}");
+
                 string destinationFilePath = $@"{directPath}\{imageName}";
 
                 await using FileStream fileStream = System.IO.File.OpenWrite(destinationFilePath);
@@ -139,7 +140,7 @@ namespace ConsoleApp
 
                 var tag = string.IsNullOrWhiteSpace(message.Caption) ? "Без тега" : message.Caption;
 
-                var createdPhoto = _photoRepository.CreatePhoto(destinationFilePath, tag);
+                var createdPhoto = _photoRepository.CreatePhoto($"/images/{message.Chat.Id}/{imageName}", tag);
 
                 Console.WriteLine($"Файл успешно сохранен с новым именем: {imageName}");
                 Console.WriteLine($"Тег фото: {tag}");

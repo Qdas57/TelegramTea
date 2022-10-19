@@ -24,6 +24,9 @@ namespace TelegramTea.Admin.Controllers
 
         public IActionResult Photos()
         {
+            //TODO: По три карточки в ряд
+            //TODO: Вместе с датой - сколько дней назад была добавлена(сегодня, вчера, x дней назад)
+            //TODO: Определить новый класс модели - не отдавать на View PhotoEntity
             var photos = _photoRepository.GetAllPhotos();
 
             return View(photos);
