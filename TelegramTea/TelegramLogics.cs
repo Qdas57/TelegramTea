@@ -9,13 +9,6 @@ using Telegram.Bot.Types.InputFiles;
 
 namespace ConsoleApp
 {
-    //S.O.L.I.D - 
-
-    //S - принцип единственной ответственности - Single responsibility principle
-    
-
-    //TODO: вынести логику для работы с файловой системой в отдельный класс - FileService ??
-
     internal class TelegramLogics
     {
         private readonly PhotoRepository _photoRepository;
@@ -55,11 +48,13 @@ namespace ConsoleApp
                 }
                 if (message.Text.ToLower() == "/help")
                 {
+                    //TODO: create request
                     await botClient.SendTextMessageAsync(message.Chat.Id, $"Hi! Сommands to work with me: \n /start - Запуск бота \n /help - Список команд \n /random - Случайная фотография \n /tag - Все доступные теги( без повторов ) \n Отправьте мне фото документом и подпишите его - после этого я запишу его к себе в бд! Так же ты можешь написать произвольный тег и я попробую его найти!");
                     return;
                 }
                 if (message.Text.ToLower() == "/tags")
-                {                   
+                {
+                    //TODO: create request
                     var tags = _photoRepository.GetTagList();
                     await botClient.SendTextMessageAsync(message.Chat.Id, $"Available tags: {string.Join(", ", tags)}");
 
@@ -69,6 +64,7 @@ namespace ConsoleApp
                 {
                     try
                     {
+                        //TODO: create request
                         var randomPhoto = _photoRepository.GetRandomPhoto();
 
                         await using Stream stream = System.IO.File.OpenRead(randomPhoto.NamePhoto);
@@ -88,6 +84,7 @@ namespace ConsoleApp
                 {
                     try
                     {
+                        //TODO: create request
                         var randomPhoto = _photoRepository.GetRandomPhotoByTag(message.Text);
 
                         if (randomPhoto is null)
@@ -115,6 +112,7 @@ namespace ConsoleApp
             }
             if (message.Photo != null)
             {
+                //TODO: create request
                 Console.WriteLine($"Data: {DateTime.Now}\n ChatId: {message.Chat.Id} \n Action: send Document {message.Photo}");
 
                 await botClient.SendTextMessageAsync(message.Chat.Id, $"Перехожу к записи в бд");
@@ -150,51 +148,39 @@ namespace ConsoleApp
             }
             if (message.Document != null)
             {
-                Console.WriteLine($"Data: {DateTime.Now}\n ChatId: {message.Chat.Id} \n Action: send Document {message.Document.FileName}");
+                //Console.WriteLine($"Data: {DateTime.Now}\n ChatId: {message.Chat.Id} \n Action: send Document {message.Document.FileName}");
 
-                await botClient.SendTextMessageAsync(message.Chat.Id, $"Перехожу к записи в бд");
+                //await botClient.SendTextMessageAsync(message.Chat.Id, $"Перехожу к записи в бд");
 
-                var fileId = update.Message.Document.FileId;
+                //var fileId = update.Message.Document.FileId;
 
-                var fileInfo = await botClient.GetFileAsync(fileId);
+                //var fileInfo = await botClient.GetFileAsync(fileId);
 
-                var filePath = fileInfo.FilePath;
+                //var filePath = fileInfo.FilePath;
 
-                var imageName = $"{Guid.NewGuid()}.jpg";
-                var directPath = Directory.CreateDirectory($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{message.Chat.Id}");
-                string destinationFilePath = $@"{directPath}\{imageName}";
+                //var imageName = $"{Guid.NewGuid()}.jpg";
+                //var directPath = Directory.CreateDirectory($@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\{message.Chat.Id}");
+                //string destinationFilePath = $@"{directPath}\{imageName}";
 
-                await using FileStream fileStream = System.IO.File.OpenWrite(destinationFilePath);
-                await botClient.DownloadFileAsync(filePath, fileStream);
+                //await using FileStream fileStream = System.IO.File.OpenWrite(destinationFilePath);
+                //await botClient.DownloadFileAsync(filePath, fileStream);
 
-                var tag = string.IsNullOrWhiteSpace(message.Caption) ? "Без тега" : message.Caption;
+                //var tag = string.IsNullOrWhiteSpace(message.Caption) ? "Без тега" : message.Caption;
 
-                var createdPhoto = _photoRepository.CreatePhoto(destinationFilePath, tag);
+                //var createdPhoto = _photoRepository.CreatePhoto(destinationFilePath, tag);
 
-                Console.WriteLine($"Файл успешно сохранен с новым именем: {imageName}");
-                Console.WriteLine($"Тег фото: {tag}");
+                //Console.WriteLine($"Файл успешно сохранен с новым именем: {imageName}");
+                //Console.WriteLine($"Тег фото: {tag}");
 
-                await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл сохранен с тегом: {tag}");
-                await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл успешно сохранен с новым именем: {imageName}");
+                //await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл сохранен с тегом: {tag}");
+                //await botClient.SendTextMessageAsync(message.Chat.Id, $"Файл успешно сохранен с новым именем: {imageName}");
 
                 //Thread.Sleep(10000);
 
 
 
                 return;
-            }
-            
-
-            // blob
-            // x => x.Name
-            // (parameters) => x.Name == "Some string"
-            // LINQ, лямбды, анонимные методы
-
-
-            //VS, VS Code, Rider
-            //ReSharper -> 
-
-            //Роберт Мартин "Чистый Код"
+            }            
         }
     }
 }

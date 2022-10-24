@@ -5,7 +5,9 @@ VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramTea", "TelegramTea\TelegramTea.csproj", "{53253595-D2A8-496C-B147-62AB36AE5D61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramTea.Admin", "TelegramTea.Admin\TelegramTea.Admin.csproj", "{D5C09C50-BCD1-4C25-B2DB-0F798D4AEAF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramTea.Admin", "TelegramTea.Admin\TelegramTea.Admin.csproj", "{D5C09C50-BCD1-4C25-B2DB-0F798D4AEAF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramTea.DesktopUI", "TelegramTea.DesktopUI\TelegramTea.DesktopUI.csproj", "{8DBF9B8D-D4EB-4F15-9E57-146C5070A24D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D5C09C50-BCD1-4C25-B2DB-0F798D4AEAF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5C09C50-BCD1-4C25-B2DB-0F798D4AEAF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5C09C50-BCD1-4C25-B2DB-0F798D4AEAF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DBF9B8D-D4EB-4F15-9E57-146C5070A24D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DBF9B8D-D4EB-4F15-9E57-146C5070A24D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DBF9B8D-D4EB-4F15-9E57-146C5070A24D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DBF9B8D-D4EB-4F15-9E57-146C5070A24D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
