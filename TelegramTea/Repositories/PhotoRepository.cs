@@ -67,7 +67,7 @@ namespace TelegramTea.Repositories
             {
                 Console.WriteLine(e.Message + "\nОшибка в GetRandomPhoto");
                 throw;
-            }            
+            }
         }
 
         public PhotoEntity GetRandomPhotoByTag(string tag)
@@ -75,7 +75,7 @@ namespace TelegramTea.Repositories
             try
             {
                 var query = _photoContext.Photos.Where(u => u.Tag.Contains(tag));
-                
+
                 var count = query.Count();
 
                 Random random = new Random();
@@ -109,7 +109,7 @@ namespace TelegramTea.Repositories
             return result;
 
         }
-        
+
         public bool DeletePhoto(int id)
         {
             try
@@ -142,7 +142,7 @@ namespace TelegramTea.Repositories
         {
             try
             {
-                var query = _photoContext.Photos.Select(u => u.Tag).Distinct(); 
+                var query = _photoContext.Photos.Select(u => u.Tag).Distinct();
 
                 var tags = query.ToList();
 

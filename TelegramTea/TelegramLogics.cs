@@ -29,7 +29,7 @@ namespace ConsoleApp
 
         public async Task Telegram(string[] args)
         {
-            var client = new TelegramBotClient("5641621844:AAEdBTO7vQphtQhg9Gbx7dKYxYpf6aYKoLs");
+            var client = new TelegramBotClient("5632960112:AAG_5SObsspi8JUF4fBbz6x4DnISir94eQI");
             client.StartReceiving(Update, Error);
 
             Console.WriteLine("The coolest logs in thread..");

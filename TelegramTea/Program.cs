@@ -9,6 +9,8 @@ namespace ConsoleApp
 
         static void Main(string[] args)
         {
+            Console.WriteLine(DateTime.Now);
+
             TelegramLogics t = new TelegramLogics();
             t.Telegram(args);
         }
